@@ -29,9 +29,85 @@ public class ExplorerSearch {
      * @return the number of spaces the explorer can reach
      */
     public static int reachableArea(int[][] island) {
-        // Implement your method here!
-        // Please also make more test cases
-        // I STRONGLY RECOMMEND testing some helpers you might make too
-        return -1;
+        int[] start = explorerLocation(island);
+        boolean[][] visited = new boolean[island.length][island[0].length];
+        return reachableArea(island, visited, start);
+    }
+
+    public static int reachableArea(int[][] island, boolean[][] visited, int[] current) {
+        int curRow = current[0];
+        int curColumn = current[1];
+
+        int landCount = 1;
+
+        if (visited[curRow][curColumn]) return landCount;
+        visited[curRow][curColumn] = true;
+
+        List<int[]> neighbors = possibleMoves(island, current);
+        for (int[] neighbor : neighbors) {
+            if (!visited[neighbor[0]][neighbor[1]]) {
+                landCount += reachableArea(island, visited, neighbor);
+            }
+        }
+
+        return landCount;
+    }
+
+    public static List<int[]> possibleMoves(int[][] island, int[] current) {
+        int curRow = current[0];
+        int curColumn = current[1];
+
+        int newRow, newColumn;
+        List<int[]> possible = new ArrayList<>();
+
+        // up
+
+        newRow = curRow -1;
+        newColumn = curColumn;
+
+        if (newRow >= 0 && island[newRow][newColumn] != 2 && island[newRow][newColumn] != 3) {
+            possible.add(new int[]{newRow, newColumn});
+        }
+
+        // down
+
+        newRow = curRow + 1;
+        newColumn = curColumn;
+
+        if (newRow < island.length && island[newRow][newColumn] != 2 && island[newRow][newColumn] != 3) {
+            possible.add(new int[]{newRow, newColumn});
+        }
+
+        // left
+
+        newRow = curRow;
+        newColumn = curColumn - 1;
+
+        if (newColumn >= 0 && island[newRow][newColumn] != 2 && island[newRow][newColumn] != 3) {
+            possible.add(new int[]{newRow, newColumn});
+        }
+
+        // right
+
+        newRow = curRow;
+        newColumn = curColumn + 1;
+
+        if (newColumn < island[newRow].length && island[newRow][newColumn] != 2 && island[newRow][newColumn] != 3) {
+            possible.add(new int[]{newRow, newColumn});
+        }
+
+        return possible;
+    }
+
+    public static int[] explorerLocation(int[][] island) {
+        for (int row = 0; row < island.length; row++) {
+            for (int column = 0; column < island[row].length; column++) {
+                if (island[row][column] == 0) {
+                    return new int[]{row, column};
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Your island does not have an explorer!");
     }
 }
